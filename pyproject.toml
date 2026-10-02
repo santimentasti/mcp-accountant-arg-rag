@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "contador-mcp"
+version = "0.1.0"
+description = "MCP connector (FastMCP) for Argentine accounting firms: monthly compliance calendar, calculators and a RAG knowledge base of tax law."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=4.0.10,<5",
+    # Security floors for transitive deps (pip-audit, 2026-10): keep these until fastmcp requires them itself.
+    "anyio>=4.14.2",
+    "cryptography>=50.0.0",
+    "pyjwt>=2.15.1",
+]
+
+[project.optional-dependencies]
+pdf = ["pypdf>=6"]
+dense = ["fastembed>=0.4"]
+dev = ["pytest>=8", "pypdf>=6", "bandit>=1.8", "pip-audit>=2.7"]
+
+[project.scripts]
+contador-mcp = "contador_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/contador_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

@@ -1,0 +1,35 @@
+{
+  "_nota": "Tablas de alícuotas por defecto. NO son fuente oficial: verificar vigencia antes de usar en una liquidación real. Para modificarlas copiar este archivo a $CONTADOR_DATA_DIR/rates.json (tiene prioridad).",
+  "_actualizado": "2026-10",
+  "seguridad_social": {
+    "fuente": "Ley 24.241, Ley 19.032, Ley 23.660, Dto. 814/01 mod. Ley 27.430 y Ley 27.541. Verificar cambios de la reforma laboral 2026.",
+    "aportes_empleado": {
+      "jubilacion_sipa": 11.0,
+      "ley_19032_inssjp": 3.0,
+      "obra_social": 3.0
+    },
+    "contribuciones_empleador": {
+      "sipa_inssjp_fne_aaff": {
+        "general": 18.0,
+        "grandes_servicios_comercio": 20.4
+      },
+      "obra_social": 6.0
+    },
+    "tope_base_imponible_maxima": null,
+    "detraccion_por_empleado": null,
+    "_campos_null": "tope, detracción, ART y seguro de vida varían periódicamente o por contrato: se pasan como parámetro."
+  },
+  "sicore_ganancias_rg830": {
+    "fuente": "RG 830 (AFIP) Anexo VIII; montos no sujetos según RG 5423 (vigentes desde 01/2024). Verificar actualizaciones.",
+    "conceptos": {
+      "bienes_muebles": {"descripcion": "Enajenación de bienes muebles y bienes de cambio", "alicuota_inscripto": 2.0, "alicuota_no_inscripto": 10.0, "minimo_no_sujeto": 224000},
+      "locaciones_obra_servicios": {"descripcion": "Locaciones de obra y/o servicios no ejecutados en relación de dependencia", "alicuota_inscripto": 2.0, "alicuota_no_inscripto": 28.0, "minimo_no_sujeto": 67170},
+      "alquileres_inmuebles": {"descripcion": "Alquileres de inmuebles urbanos y rurales", "alicuota_inscripto": 6.0, "alicuota_no_inscripto": 28.0, "minimo_no_sujeto": 11200},
+      "honorarios_profesionales": {"descripcion": "Profesiones liberales, oficios, directores, síndicos (escala para inscriptos)", "alicuota_inscripto": null, "alicuota_no_inscripto": 28.0, "minimo_no_sujeto": null, "usa_escala": true}
+    }
+  },
+  "iva": {
+    "fuente": "Ley de IVA (t.o. 1997) arts. 28 y concordantes",
+    "alicuotas": {"general": 21.0, "reducida": 10.5, "incrementada": 27.0}
+  }
+}

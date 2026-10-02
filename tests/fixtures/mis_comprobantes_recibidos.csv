@@ -1,0 +1,4 @@
+"Fecha de Emisión";"Tipo de Comprobante";"Punto de Venta";"Número Desde";"Número Hasta";"Cód. Autorización";"Tipo Doc. Emisor";"Nro. Doc. Emisor";"Denominación Emisor";"Tipo Cambio";"Moneda";"Imp. Neto Gravado";"Imp. Neto No Gravado";"Imp. Op. Exentas";"Otros Tributos";"IVA";"Imp. Total"
+"03/09/2026";"1 - Factura A";"00002";"00001234";"00001234";"76123456789012";"80";"30500010912";"PROVEEDOR UNO SA";"1,00";"$";"100000,00";"0,00";"0,00";"3000,00";"21000,00";"124000,00"
+"10/09/2026";"6 - Factura B";"00005";"00000077";"00000077";"76123456789013";"80";"20111111112";"KIOSCO DOS";"1,00";"$";"0,00";"0,00";"0,00";"0,00";"0,00";"12100,00"
+"15/09/2026";"3 - Nota de Crédito A";"00002";"00000050";"00000050";"76123456789014";"80";"30500010912";"PROVEEDOR UNO SA";"1,00";"$";"10000,00";"0,00";"0,00";"0,00";"2100,00";"12100,00"
