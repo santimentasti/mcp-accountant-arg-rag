@@ -14,12 +14,13 @@ from fastmcp.server.middleware.rate_limiting import RateLimitingMiddleware
 from fastmcp.server.middleware.response_limiting import ResponseLimitingMiddleware
 from pydantic import Field
 from starlette.requests import Request
-from starlette.responses import PlainTextResponse
+from starlette.responses import HTMLResponse, PlainTextResponse
 
 from .config import Settings, load_settings
 from .rag.retrievers import Embedder, load_embedder
 from .security import (
     SCOPE_ADMIN, SCOPE_READ, SCOPE_WRITE, SecurityConfig, SecurityMiddleware, TenantRegistry, build_auth_provider,
+    update_members,
     current_principal, generate_token, load_security_config, tenant_dir,
 )
 from .service import ContadorService
@@ -99,9 +100,17 @@ def create_server(settings: Settings | None = None, embedder: Embedder | None = 
         SecurityMiddleware(cfg, registry, WRITE_TOOLS, ADMIN_TOOLS),
         ResponseLimitingMiddleware(max_size=cfg.max_response_bytes),
     ]
-    mcp = FastMCP("contador-mcp", instructions=INSTRUCTIONS, version="0.2.0", auth=build_auth_provider(cfg),
+    mcp = FastMCP("contador-mcp", instructions=INSTRUCTIONS, version="0.2.0", auth=build_auth_provider(cfg, settings.data_dir),
                   middleware=middleware, mask_error_details=True)
     mcp.registry = registry  # type: ignore[attr-defined]  # handy for tests / embedding
+
+    @mcp.custom_route("/", methods=["GET"])
+    async def landing(request: Request) -> HTMLResponse:  # public instructions page, no data
+        return HTMLResponse(landing_html(cfg), headers=_PAGE_HEADERS)
+
+    @mcp.custom_route("/privacidad", methods=["GET"])
+    async def privacy(request: Request) -> HTMLResponse:
+        return HTMLResponse(privacy_html(cfg), headers=_PAGE_HEADERS)
 
     @mcp.custom_route("/health", methods=["GET"])
     async def health(request: Request) -> PlainTextResponse:  # unauthenticated liveness probe, no data
@@ -516,6 +525,85 @@ def create_server(settings: Settings | None = None, embedder: Embedder | None = 
     return mcp
 
 
+_PAGE_HEADERS = {
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+}
+_PAGE_CSS = """body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:760px;margin:40px auto;
+padding:0 16px;line-height:1.55;color:#1d2433;background:#fafaf7}h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}
+code,.url{background:#eef1f5;padding:2px 6px;border-radius:4px;font-size:.95rem;word-break:break-all}
+.url{display:block;padding:10px 12px;margin:8px 0;font-family:ui-monospace,monospace}
+.note{background:#fff7e0;border-left:4px solid #e0a800;padding:10px 14px;border-radius:4px}
+@media (prefers-color-scheme:dark){body{background:#15181d;color:#e6e8eb}code,.url{background:#232830}
+.note{background:#2b2513}}"""
+
+
+def _esc(text: str) -> str:
+    import html
+
+    return html.escape(text, quote=True)
+
+
+def landing_html(cfg: SecurityConfig) -> str:
+    o = cfg.oauth
+    name = _esc(o.operator_name if o else "contador-mcp")
+    url = _esc(f"{o.public_url}/mcp") if o else "/mcp"
+    contact = _esc(o.support_contact) if o else "el administrador"
+    login = {"google": "tu cuenta de Google", "oidc": "tu cuenta corporativa", "custom": "tu cuenta"}.get(
+        o.provider if o else "", "tu cuenta")
+    return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>{name} · Conector MCP</title>
+<style>{_PAGE_CSS}</style></head><body>
+<h1>{name}: asistente para estudios contables</h1>
+<p>Conector MCP que le da a tu asistente de IA (Claude, ChatGPT…) el calendario de vencimientos por CUIT,
+checklists de inicio y cierre de mes, calculadoras (IVA, F.931, SAC, anticipos de Ganancias, Convenio
+Multilateral, SICORE) y una base normativa con citas.</p>
+<h2>Cómo conectarlo</h2>
+<p><b>URL del conector:</b></p><span class="url">{url}</span>
+<ol>
+<li><b>Claude (web o escritorio):</b> Configuración → Conectores → <i>Agregar conector personalizado</i> →
+pegá la URL → <i>Conectar</i> e ingresá con {login}.</li>
+<li><b>Claude Code:</b> <code>claude mcp add --transport http contador {url}</code> y luego <code>/mcp</code>
+para iniciar sesión.</li>
+<li><b>ChatGPT</b> (planes con conectores/modo desarrollador): Configuración → Conectores → Crear →
+URL del conector, autenticación OAuth.</li>
+</ol>
+<h2>Para empezar</h2>
+<p>Probá pedirle: <i>"Registrá a mi cliente ACME SA, CUIT 30-71234567-1, sociedad responsable inscripta,
+con empleados. ¿Qué vence esta semana?"</i> o <i>"Armame el checklist de inicio de mes"</i>.</p>
+<p class="note">Beta privada: el acceso es por invitación. Si al conectarte ves "no está invitada",
+pedí acceso a {contact}. Cada cuenta trabaja en un espacio aislado; no cargues datos reales de clientes sin
+haber leído la <a href="/privacidad">política de privacidad</a>. Las fechas y alícuotas son orientativas:
+verificá siempre contra ARCA.</p>
+</body></html>"""
+
+
+def privacy_html(cfg: SecurityConfig) -> str:
+    o = cfg.oauth
+    name = _esc(o.operator_name if o else "contador-mcp")
+    contact = _esc(o.support_contact) if o else "el administrador"
+    return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacidad · {name}</title>
+<style>{_PAGE_CSS}</style></head><body>
+<h1>Política de privacidad</h1>
+<p><b>Responsable del servicio:</b> {name}. Contacto: {contact}.</p>
+<h2>Qué datos tratamos</h2>
+<ul><li>Del inicio de sesión: tu email verificado y un identificador de cuenta. No accedemos a tu correo,
+archivos ni contactos.</li>
+<li>Los datos que vos cargues a través del asistente (perfiles de clientes, comprobantes, nómina, notas).</li>
+<li>Un registro de auditoría de qué herramienta se usó, cuándo y sobre qué cliente (sin el contenido).</li></ul>
+<h2>Para qué y cómo</h2>
+<p>Solo para prestar el servicio. Cada cuenta o estudio tiene una base de datos separada y cifrada en reposo;
+no se comparten datos entre estudios ni con terceros, ni se usan para entrenar modelos. Tené en cuenta que
+el asistente de IA que uses (p. ej. Claude o ChatGPT) recibe las respuestas de las herramientas según sus
+propias políticas.</p>
+<h2>Tus derechos (Ley 25.326)</h2>
+<p>Podés pedir acceso, rectificación o eliminación de tus datos escribiendo a {contact}. La Agencia de Acceso
+a la Información Pública es el órgano de control de la Ley 25.326.</p>
+</body></html>"""
+
+
 def _is_loopback(host: str) -> bool:
     if host == "localhost":
         return True
@@ -535,9 +623,22 @@ def main(argv: list[str] | None = None) -> None:
                         help="Permite HTTP sin autenticación en una interfaz no-loopback (NO usar en producción)")
     parser.add_argument("--gen-token", metavar="TENANT",
                         help="Genera un token para el tenant (estudio) y muestra el hash a configurar; no inicia el server")
+    parser.add_argument("--invite", metavar="EMAIL", help="Invita un email (modo oauth) y termina")
+    parser.add_argument("--revoke", metavar="EMAIL", help="Quita el acceso de un email (modo oauth) y termina")
+    parser.add_argument("--tenant", default=None, help="Estudio para --invite (default: espacio personal)")
+    parser.add_argument("--role", default="member", choices=["viewer", "member", "admin"], help="Rol para --invite")
     parser.add_argument("--scopes", default=f"{SCOPE_READ},{SCOPE_WRITE}",
                         help=f"Scopes para --gen-token (ej. {SCOPE_READ} | {SCOPE_READ},{SCOPE_WRITE},{SCOPE_ADMIN})")
     args = parser.parse_args(argv)
+
+    if args.invite or args.revoke:
+        settings = load_settings(args.data_dir)
+        email = args.invite or args.revoke
+        update_members(settings.data_dir / "members.json", email, args.tenant,
+                       args.role if args.tenant else "admin", revoke=bool(args.revoke))
+        print(f"{'Invitado' if args.invite else 'Revocado'}: {email.lower()} "
+              f"(archivo {settings.data_dir / 'members.json'}; no requiere reinicio)", file=sys.stderr)
+        return
 
     if args.gen_token:
         token, digest = generate_token()

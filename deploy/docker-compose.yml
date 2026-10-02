@@ -6,6 +6,7 @@ services:
     image: contador-mcp:latest
     restart: unless-stopped
     env_file: .env
+    # tokens.json is only read when CONTADOR_AUTH_MODE=static (an empty {} file is fine otherwise)
     environment:
       CONTADOR_STATIC_TOKENS_FILE: /run/secrets/contador_tokens
     secrets: [contador_tokens]
@@ -18,7 +19,7 @@ services:
     pids_limit: 200
     mem_limit: 1g
     expose: ["8000"]           # NOT published on the host: only reachable through Caddy
-    networks: [internal]
+    networks: [internal, egress]   # egress: OAuth needs to reach Google (token exchange / userinfo)
 
   caddy:
     image: caddy:2
@@ -46,4 +47,5 @@ volumes:
 networks:
   internal:
     internal: true
+  egress:
   public:

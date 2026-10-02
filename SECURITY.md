@@ -20,6 +20,7 @@ model, the controls in place, and what operators must still do.
 | Threat | Example | Controls |
 |---|---|---|
 | Unauthenticated access | Internet scanner hits `/mcp` | HTTP requires `static` (SHA-256-hashed bearer tokens, constant-time compare) or `jwt` (signature + **issuer + audience** mandatory). CLI refuses non-loopback HTTP without auth. `/health` exposes nothing. |
+| Account takeover / phishing via OAuth | Rogue app registers and steals codes | OAuth 2.1 + **PKCE S256**; dynamic registration only for allow-listed callbacks (claude.ai, claude.com, chatgpt.com, localhost); **consent screen** with CSRF + signed cookies; Google `email_verified` required; access only via invite list / `members.json` (case-insensitive), revocable without restart; OAuth state (client registrations, upstream tokens) **Fernet-encrypted at rest**; signing key file `0600`; upstream Google tokens never leave the server. Full flow tested headlessly against a fake IdP. |
 | Cross-tenant leakage | Estudio B queries Estudio A's clients | One DB + KB per tenant (`data/tenants/<tenant>/`); tenant comes only from the verified token claim; tenant id validated `^[A-Za-z0-9_-]{1,64}$` and path-checked. Tested over real HTTP. |
 | Cross-client leakage inside an estudio | A note about client X shows up when asking about Y | Client notes are indexed with `client_cuit` and only returned when that CUIT is passed. |
 | Prompt injection → file exfiltration | Malicious PDF asks the model to ingest `/etc/passwd` and then search it | `file_path` is resolved (symlinks included) and must be a regular, non-hidden `.csv/.txt/.md/.pdf` inside `CONTADOR_IMPORT_DIRS` (default `<data>/inbox`), ≤20 MB. **Disabled entirely over HTTP** by default. |
@@ -47,6 +48,8 @@ model, the controls in place, and what operators must still do.
   invoices, notes, employees and filings (`ON DELETE CASCADE`) — keep backups accordingly.
 
 ## Operator checklist (production)
+- [ ] For accountants using claude.ai: `CONTADOR_AUTH_MODE=oauth` (Google), `CONTADOR_ACCESS_POLICY=invite`,
+      Google consent screen in *Testing* with test users; keep `oauth-signing.key` and `/data` backed up.
 - [ ] `CONTADOR_AUTH_MODE=jwt` with your IdP (issuer + audience + JWKS) — or `static` with tokens from
       `contador-mcp --gen-token <tenant>`; store only hashes; rotate on staff changes.
 - [ ] Give staff the minimal scope (`contador:read` by default; `admin` only to partners).
@@ -58,6 +61,8 @@ model, the controls in place, and what operators must still do.
 
 ## Known limitations
 - Rate limiting is in-memory per process (use one replica, or put limits in the proxy too).
+- Personal sandboxes are keyed by a hash of the email; if someone changes their Google email they get a new
+  empty workspace (move them with `--invite email --tenant <old tenant>`).
 - Static tokens are loaded at start: rotation requires a restart (JWT avoids this).
 - No per-client ACL inside an estudio: every member with a scope sees all of that estudio's clients.
 - Prompt-injection defenses reduce risk but cannot eliminate it: the hard guarantees are the server-side

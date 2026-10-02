@@ -43,8 +43,8 @@ Internet ──443──► Caddy (TLS, HSTS, body limit) ──internal network
 - **Claude Code**:
   `claude mcp add --transport http contador https://mcp.tu-estudio.com.ar/mcp --header "Authorization: Bearer cmcp_…"`
 - **Other MCP clients** supporting streamable HTTP + bearer header: same URL and header.
-- **claude.ai custom connectors** require an OAuth flow. Use `jwt` mode with an IdP today for API
-  clients; a full OAuth provider (FastMCP `RemoteAuthProvider` / OAuth proxy) is on the roadmap.
+- **claude.ai / ChatGPT custom connectors**: use `CONTADOR_AUTH_MODE=oauth` (Google sign-in) — see
+  [`06-oauth-connector.md`](06-oauth-connector.md).
 
 ## JWT mode (recommended for teams)
 Configure your IdP (Auth0, Supabase, WorkOS, Keycloak…) to issue access tokens with:

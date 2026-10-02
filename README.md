@@ -11,9 +11,10 @@ from a **hybrid RAG knowledge base with citations**.
 - How the RAG works (learning notes): [`docs/03-rag-how-it-works.md`](docs/03-rag-how-it-works.md)
 - Prior art on GitHub & what we reused: [`docs/04-prior-art-github.md`](docs/04-prior-art-github.md)
 - Deployment (Docker + Caddy TLS on any VM): [`docs/05-deployment.md`](docs/05-deployment.md)
+- **Give it to accountants (OAuth "Sign in with Google" connector): [`docs/06-oauth-connector.md`](docs/06-oauth-connector.md)**
 - **Security model & operator checklist: [`SECURITY.md`](SECURITY.md)**
 
-## Quick start
+## Quick start (local)
 
 ```bash
 pip install -e ".[pdf]"          # add ,dense for local neural embeddings (fastembed)
@@ -28,6 +29,11 @@ without authentication.
 
 Data lives in `~/.contador-mcp/` (override with `--data-dir` or `CONTADOR_DATA_DIR`): a SQLite DB with
 clients, invoices, employees, filings, calendar overrides and the knowledge index.
+
+### Share it with accountants (claude.ai custom connector)
+Deploy with `CONTADOR_AUTH_MODE=oauth` (Google sign-in), invite emails, and send them the URL
+`https://<your-domain>/mcp` — the server's home page (`/`) has the step-by-step in Spanish.
+Full guide, Google Cloud setup and a ready-to-send message: [`docs/06-oauth-connector.md`](docs/06-oauth-connector.md).
 
 ### Connect to Claude Code
 ```bash
@@ -51,7 +57,9 @@ claude mcp add contador -- contador-mcp
 |---|---|---|
 | `CONTADOR_DATA_DIR` | `~/.contador-mcp` | DB + user overrides (`rates.json`, `feriados.json`) |
 | `CONTADOR_DENSE_MODEL` | `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` | fastembed model for dense retrieval; `none` disables it. Used only if `fastembed` is installed. |
-| `CONTADOR_AUTH_MODE` | `none` | `static` (hashed bearer tokens) or `jwt` (IdP); required for public HTTP |
+| `CONTADOR_AUTH_MODE` | `none` | `oauth` (claude.ai/ChatGPT connector login), `static` (hashed bearer tokens) or `jwt` (IdP); required for public HTTP |
+| `CONTADOR_OAUTH_PROVIDER`, `_CLIENT_ID`, `_CLIENT_SECRET`, `CONTADOR_PUBLIC_URL` | `google` | OAuth login provider (`google`, `oidc`, `custom`) — see docs/06 |
+| `CONTADOR_ACCESS_POLICY`, `CONTADOR_ALLOWED_EMAILS` / `_DOMAINS`, `CONTADOR_ADMIN_EMAILS` | `invite` | Who may use the OAuth beta; `contador-mcp --invite/--revoke` edits `members.json` live |
 | `CONTADOR_STATIC_TOKENS[_FILE]` | — | JSON `{sha256: {tenant, scopes, name}}` |
 | `CONTADOR_JWT_JWKS_URI` / `_PUBLIC_KEY`, `_ISSUER`, `_AUDIENCE` | — | JWT verification (issuer and audience mandatory) |
 | `CONTADOR_TENANT_CLAIM` | `tenant` | JWT claim that identifies the estudio |
@@ -100,7 +108,7 @@ list (e.g. *06/10 pago de sueldos, 09/10 F.931 período 2026-09, 15/10 CM03…*)
 ## Development
 ```bash
 pip install -e ".[dev]"
-pytest -q                       # 44 tests incl. real-HTTP auth/tenant isolation and JWT
+pytest -q                       # 49 tests incl. full OAuth flow, tenant isolation, scopes and JWT
 bandit -q -r src                # static security scan
 pip-audit                       # dependency CVEs
 ```
@@ -112,4 +120,3 @@ Third-party data (holidays, ARCA code tables) is attributed in [`NOTICE`](NOTICE
 - ARCA web services (WSAA/WSFE, padrón) and SIRADIG / Libro IVA Digital exports.
 - Provincial calendars (ARBA, AGIP, etc.) loaded as overrides automatically.
 - Cross-encoder re-ranker and query rewriting for the RAG; scheduled ingestion of Boletín Oficial.
-- Multi-user auth for the HTTP deployment (FastMCP auth providers).
