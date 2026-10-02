@@ -1,0 +1,3 @@
+Fecha,Tipo,Punto de Venta,Número Desde,Número Hasta,Cód. Autorización,Tipo Doc. Receptor,Nro. Doc. Receptor,Denominación Receptor,Tipo Cambio,Moneda,Neto Grav. IVA 21%,IVA 21%,Neto Grav. IVA 10.5%,IVA 10.5%,Neto No Gravado,Op. Exentas,Otros Tributos,Imp. Total
+2026-09-05,1 - Factura A,3,100,100,1,80,30500010912,CLIENTE GRANDE SA,1,PES,200000.00,42000.00,0,0,0,0,0,242000.00
+2026-09-20,6 - Factura B,3,101,101,1,99,0,CONSUMIDOR FINAL,1,PES,0,0,100000.00,10500.00,0,0,0,110500.00

@@ -1,0 +1,57 @@
+{
+  "_nota": "Feriados nacionales y días no laborables con fines turísticos (Ley 27.399 y decretos anuales). Usados para correr vencimientos al día hábil siguiente. Para editar, copiar este archivo a $CONTADOR_DATA_DIR/feriados.json. 2027: faltan los días no laborables con fines turísticos (se decretan a fines del año anterior).",
+  "feriados": {
+    "2025": [
+      {"fecha": "2025-01-01", "nombre": "Año Nuevo"},
+      {"fecha": "2025-03-03", "nombre": "Carnaval"},
+      {"fecha": "2025-03-04", "nombre": "Carnaval"},
+      {"fecha": "2025-03-24", "nombre": "Día de la Memoria"},
+      {"fecha": "2025-04-02", "nombre": "Malvinas"},
+      {"fecha": "2025-04-18", "nombre": "Viernes Santo"},
+      {"fecha": "2025-05-01", "nombre": "Día del Trabajo"},
+      {"fecha": "2025-05-02", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2025-06-16", "nombre": "Paso a la Inmortalidad de Güemes (trasladado)"},
+      {"fecha": "2025-06-20", "nombre": "Paso a la Inmortalidad de Belgrano"},
+      {"fecha": "2025-07-09", "nombre": "Día de la Independencia"},
+      {"fecha": "2025-08-15", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2025-11-21", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2025-11-24", "nombre": "Día de la Soberanía Nacional (trasladado)"},
+      {"fecha": "2025-12-08", "nombre": "Inmaculada Concepción"},
+      {"fecha": "2025-12-25", "nombre": "Navidad"}
+    ],
+    "2026": [
+      {"fecha": "2026-01-01", "nombre": "Año Nuevo"},
+      {"fecha": "2026-02-16", "nombre": "Carnaval"},
+      {"fecha": "2026-02-17", "nombre": "Carnaval"},
+      {"fecha": "2026-03-23", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2026-03-24", "nombre": "Día de la Memoria"},
+      {"fecha": "2026-04-02", "nombre": "Malvinas"},
+      {"fecha": "2026-04-03", "nombre": "Viernes Santo"},
+      {"fecha": "2026-05-01", "nombre": "Día del Trabajo"},
+      {"fecha": "2026-05-25", "nombre": "Revolución de Mayo"},
+      {"fecha": "2026-06-15", "nombre": "Paso a la Inmortalidad de Güemes (trasladado)"},
+      {"fecha": "2026-07-09", "nombre": "Día de la Independencia"},
+      {"fecha": "2026-07-10", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2026-08-17", "nombre": "Paso a la Inmortalidad de San Martín"},
+      {"fecha": "2026-10-12", "nombre": "Día del Respeto a la Diversidad Cultural"},
+      {"fecha": "2026-11-23", "nombre": "Día de la Soberanía Nacional (trasladado)"},
+      {"fecha": "2026-12-07", "nombre": "No laborable con fines turísticos"},
+      {"fecha": "2026-12-08", "nombre": "Inmaculada Concepción"},
+      {"fecha": "2026-12-25", "nombre": "Navidad"}
+    ],
+    "2027": [
+      {"fecha": "2027-01-01", "nombre": "Año Nuevo"},
+      {"fecha": "2027-02-08", "nombre": "Carnaval"},
+      {"fecha": "2027-02-09", "nombre": "Carnaval"},
+      {"fecha": "2027-03-24", "nombre": "Día de la Memoria"},
+      {"fecha": "2027-03-26", "nombre": "Viernes Santo"},
+      {"fecha": "2027-04-02", "nombre": "Malvinas"},
+      {"fecha": "2027-05-25", "nombre": "Revolución de Mayo"},
+      {"fecha": "2027-06-21", "nombre": "Paso a la Inmortalidad de Güemes (trasladado)"},
+      {"fecha": "2027-07-09", "nombre": "Día de la Independencia"},
+      {"fecha": "2027-08-16", "nombre": "Paso a la Inmortalidad de San Martín (trasladado)"},
+      {"fecha": "2027-10-11", "nombre": "Día del Respeto a la Diversidad Cultural (trasladado)"},
+      {"fecha": "2027-12-08", "nombre": "Inmaculada Concepción"}
+    ]
+  }
+}
