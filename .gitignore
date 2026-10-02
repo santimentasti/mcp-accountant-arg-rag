@@ -7,3 +7,5 @@ build/
 .pytest_cache/
 .contador-mcp/
 *.sqlite3
+deploy/.env
+deploy/secrets/

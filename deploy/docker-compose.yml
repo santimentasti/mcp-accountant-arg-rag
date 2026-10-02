@@ -1,0 +1,49 @@
+# Production-style stack: Caddy (automatic HTTPS) -> contador-mcp (internal network only).
+# Usage: cp deploy/.env.example deploy/.env && edit, then: docker compose -f deploy/docker-compose.yml up -d
+services:
+  contador:
+    build: ..
+    image: contador-mcp:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      CONTADOR_STATIC_TOKENS_FILE: /run/secrets/contador_tokens
+    secrets: [contador_tokens]
+    volumes:
+      - contador-data:/data
+    read_only: true            # immutable container filesystem; only /data and /tmp are writable
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 1g
+    expose: ["8000"]           # NOT published on the host: only reachable through Caddy
+    networks: [internal]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [contador]
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal, public]
+
+secrets:
+  contador_tokens:
+    file: ./secrets/tokens.json   # SHA-256 hashes only (see `contador-mcp --gen-token`)
+
+volumes:
+  contador-data:
+  caddy-data:
+
+networks:
+  internal:
+    internal: true
+  public:

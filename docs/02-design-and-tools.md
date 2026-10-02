@@ -72,6 +72,15 @@ normative claims from `knowledge_search` with citations.
 | `iibb_convenio_multilateral` | Art. 2 coefficients (50% ingresos / 50% gastos) + tax per jurisdicción. |
 | `sicore_retencion_ganancias` | Retención de Ganancias (RG 830 style: acumulado mensual − mínimo no sujeto × alícuota). |
 | `rates_get` | Show the rate tables in use (and that they need verification). |
+| `arca_codes` | ARCA parameter tables (receipt/document types, VAT codes, receiver VAT condition RG 5616…). |
+
+### Security
+| Tool | Purpose |
+|---|---|
+| `whoami` | Current tenant, user and scopes. |
+| `audit_log` | Per-tenant audit trail (admin scope). |
+
+Security model (auth, tenants, scopes, file guard, audit): see [`SECURITY.md`](../SECURITY.md).
 
 ### Knowledge (RAG)
 | Tool | Purpose |

@@ -7,11 +7,18 @@ from contador_mcp.service import ContadorService
 FIX = Path(__file__).parent / "fixtures"
 
 
+def _inbox(svc, name):
+    """Files are only readable from the allowed import dir (default: <data_dir>/inbox)."""
+    dst = svc.settings.data_dir / "inbox" / name
+    dst.write_bytes((FIX / name).read_bytes())
+    return str(dst)
+
+
 def test_import_mis_comprobantes_both_formats(acme):
-    r = acme.import_mis_comprobantes(ACME, "recibida", file_path=str(FIX / "mis_comprobantes_recibidos.csv"))
+    r = acme.import_mis_comprobantes(ACME, "recibida", file_path=_inbox(acme, "mis_comprobantes_recibidos.csv"))
     assert (r["leidos"], r["insertados"]) == (3, 3)
     assert r["periodos"] == ["2026-09"]
-    again = acme.import_mis_comprobantes(ACME, "recibida", file_path=str(FIX / "mis_comprobantes_recibidos.csv"))
+    again = acme.import_mis_comprobantes(ACME, "recibida", file_path=_inbox(acme, "mis_comprobantes_recibidos.csv"))
     assert again["duplicados_omitidos"] == 3
     e = acme.import_mis_comprobantes(ACME, "emitida", csv_text=(FIX / "mis_comprobantes_emitidos_nuevo.csv").read_text())
     assert e["insertados"] == 2 and not e["advertencias"]
@@ -61,7 +68,7 @@ def test_client_notes_are_private_and_retrievable(acme):
 
 
 def test_add_remove_document_and_vigencia(svc, tmp_path):
-    p = tmp_path / "rg-ficticia.txt"
+    p = svc.settings.data_dir / "inbox" / "rg-ficticia.txt"
     p.write_text("La RG 9999 establece el régimen ficticio de percepción de pruebas unitarias.", encoding="utf-8")
     r = svc.knowledge_add_document("RG 9999", file_path=str(p), fuente="RG 9999", impuesto="iva",
                                    vigente_desde="2027-01-01")
@@ -113,9 +120,20 @@ def _minimal_pdf(text: str) -> bytes:
 
 
 def test_pdf_ingestion(svc, tmp_path):
-    p = tmp_path / "memo.pdf"
+    p = svc.settings.data_dir / "inbox" / "memo.pdf"
     p.write_bytes(_minimal_pdf("Memo interno: regimen de percepcion SIRTAC aplicable desde marzo"))
     r = svc.knowledge_add_document("Memo SIRTAC", file_path=str(p), tipo="documento")
     assert r["chunks"] >= 1
     hit = svc.knowledge_search("SIRTAC percepcion")["resultados"][0]
     assert hit["titulo"] == "Memo SIRTAC" and "Página 1" in hit["seccion"]
+
+
+def test_arca_codes_and_extended_receipt_types(svc):
+    assert svc.arca_codes("tipos_comprobante", codigo="51")["filas"][0]["descripcion"].startswith("Factura A con Leyenda")
+    rec = svc.arca_codes("condiciones_iva_receptor", buscar="monotributo")
+    assert rec["cantidad"] >= 2
+    assert svc.knowledge_search("condición frente al IVA del receptor RG 5616")["resultados"]
+    from contador_mcp.domain.iva import iva_position
+    r = iva_position([{"direccion": "recibida", "tipo_comprobante": 4, "iva": 21},  # Recibo A computa
+                      {"direccion": "emitida", "tipo_comprobante": 1, "iva": 100}])
+    assert r["credito_fiscal"] == 21

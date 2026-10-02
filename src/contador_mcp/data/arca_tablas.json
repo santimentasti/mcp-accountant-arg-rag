@@ -1,0 +1,736 @@
+{
+ "_nota": "Tablas de parámetros de ARCA (WSFEv1). Datos derivados de las fixtures de django-afip (https://github.com/WhyNotHugo/django-afip, ISC License, Copyright (c) 2015-2026 Hugo Osvaldo Barrera), que a su vez provienen de los métodos FEParamGet* de ARCA.",
+ "tablas": {
+  "tipos_comprobante": [
+   {
+    "codigo": "1",
+    "descripcion": "Factura A"
+   },
+   {
+    "codigo": "2",
+    "descripcion": "Nota de Débito A"
+   },
+   {
+    "codigo": "3",
+    "descripcion": "Nota de Crédito A"
+   },
+   {
+    "codigo": "4",
+    "descripcion": "Recibos A"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "Notas de Venta al contado A"
+   },
+   {
+    "codigo": "6",
+    "descripcion": "Factura B"
+   },
+   {
+    "codigo": "7",
+    "descripcion": "Nota de Débito B"
+   },
+   {
+    "codigo": "8",
+    "descripcion": "Nota de Crédito B"
+   },
+   {
+    "codigo": "9",
+    "descripcion": "Recibos B"
+   },
+   {
+    "codigo": "10",
+    "descripcion": "Notas de Venta al contado B"
+   },
+   {
+    "codigo": "11",
+    "descripcion": "Factura C"
+   },
+   {
+    "codigo": "12",
+    "descripcion": "Nota de Débito C"
+   },
+   {
+    "codigo": "13",
+    "descripcion": "Nota de Crédito C"
+   },
+   {
+    "codigo": "15",
+    "descripcion": "Recibo C"
+   },
+   {
+    "codigo": "34",
+    "descripcion": "Cbtes. A del Anexo I, Apartado A,inc.f),R.G.Nro. 1415"
+   },
+   {
+    "codigo": "35",
+    "descripcion": "Cbtes. B del Anexo I,Apartado A,inc. f),R.G. Nro. 1415"
+   },
+   {
+    "codigo": "39",
+    "descripcion": "Otros comprobantes A que cumplan con R.G.Nro. 1415"
+   },
+   {
+    "codigo": "40",
+    "descripcion": "Otros comprobantes B que cumplan con R.G.Nro. 1415"
+   },
+   {
+    "codigo": "49",
+    "descripcion": "Comprobante de Compra de Bienes Usados a Consumidor Final"
+   },
+   {
+    "codigo": "51",
+    "descripcion": "Factura A con Leyenda \"Operación Sujeta a Retención\""
+   },
+   {
+    "codigo": "52",
+    "descripcion": "Nota de Débito A con Leyenda \"Operación Sujeta a Retención\""
+   },
+   {
+    "codigo": "53",
+    "descripcion": "Nota de Crédito A con Leyenda \"Operación Sujeta a Retención\""
+   },
+   {
+    "codigo": "54",
+    "descripcion": "Recibo A con Leyenda \"Operación Sujeta a Retención\""
+   },
+   {
+    "codigo": "60",
+    "descripcion": "Cta de Vta y Liquido prod. A"
+   },
+   {
+    "codigo": "61",
+    "descripcion": "Cta de Vta y Liquido prod. B"
+   },
+   {
+    "codigo": "63",
+    "descripcion": "Liquidacion A"
+   },
+   {
+    "codigo": "64",
+    "descripcion": "Liquidacion B"
+   },
+   {
+    "codigo": "201",
+    "descripcion": "Factura de Crédito electrónica MiPyMEs (FCE) A"
+   },
+   {
+    "codigo": "202",
+    "descripcion": "Nota de Débito electrónica MiPyMEs (FCE) A"
+   },
+   {
+    "codigo": "203",
+    "descripcion": "Nota de Crédito electrónica MiPyMEs (FCE) A"
+   },
+   {
+    "codigo": "206",
+    "descripcion": "Factura de Crédito electrónica MiPyMEs (FCE) B"
+   },
+   {
+    "codigo": "207",
+    "descripcion": "Nota de Débito electrónica MiPyMEs (FCE) B"
+   },
+   {
+    "codigo": "208",
+    "descripcion": "Nota de Crédito electrónica MiPyMEs (FCE) B"
+   },
+   {
+    "codigo": "211",
+    "descripcion": "Factura de Crédito electrónica MiPyMEs (FCE) C"
+   },
+   {
+    "codigo": "212",
+    "descripcion": "Nota de Débito electrónica MiPyMEs (FCE) C"
+   },
+   {
+    "codigo": "213",
+    "descripcion": "Nota de Crédito electrónica MiPyMEs (FCE) C"
+   }
+  ],
+  "tipos_documento": [
+   {
+    "codigo": "0",
+    "descripcion": "CI Policía Federal"
+   },
+   {
+    "codigo": "1",
+    "descripcion": "CI Buenos Aires"
+   },
+   {
+    "codigo": "2",
+    "descripcion": "CI Catamarca"
+   },
+   {
+    "codigo": "3",
+    "descripcion": "CI Córdoba"
+   },
+   {
+    "codigo": "4",
+    "descripcion": "CI Corrientes"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "CI Entre Ríos"
+   },
+   {
+    "codigo": "6",
+    "descripcion": "CI Jujuy"
+   },
+   {
+    "codigo": "7",
+    "descripcion": "CI Mendoza"
+   },
+   {
+    "codigo": "8",
+    "descripcion": "CI La Rioja"
+   },
+   {
+    "codigo": "9",
+    "descripcion": "CI Salta"
+   },
+   {
+    "codigo": "10",
+    "descripcion": "CI San Juan"
+   },
+   {
+    "codigo": "11",
+    "descripcion": "CI San Luis"
+   },
+   {
+    "codigo": "12",
+    "descripcion": "CI Santa Fe"
+   },
+   {
+    "codigo": "13",
+    "descripcion": "CI Santiago del Estero"
+   },
+   {
+    "codigo": "14",
+    "descripcion": "CI Tucumán"
+   },
+   {
+    "codigo": "16",
+    "descripcion": "CI Chaco"
+   },
+   {
+    "codigo": "17",
+    "descripcion": "CI Chubut"
+   },
+   {
+    "codigo": "18",
+    "descripcion": "CI Formosa"
+   },
+   {
+    "codigo": "19",
+    "descripcion": "CI Misiones"
+   },
+   {
+    "codigo": "20",
+    "descripcion": "CI Neuquén"
+   },
+   {
+    "codigo": "21",
+    "descripcion": "CI La Pampa"
+   },
+   {
+    "codigo": "22",
+    "descripcion": "CI Río Negro"
+   },
+   {
+    "codigo": "23",
+    "descripcion": "CI Santa Cruz"
+   },
+   {
+    "codigo": "24",
+    "descripcion": "CI Tierra del Fuego"
+   },
+   {
+    "codigo": "80",
+    "descripcion": "CUIT"
+   },
+   {
+    "codigo": "86",
+    "descripcion": "CUIL"
+   },
+   {
+    "codigo": "87",
+    "descripcion": "CDI"
+   },
+   {
+    "codigo": "89",
+    "descripcion": "LE"
+   },
+   {
+    "codigo": "90",
+    "descripcion": "LC"
+   },
+   {
+    "codigo": "91",
+    "descripcion": "CI Extranjera"
+   },
+   {
+    "codigo": "92",
+    "descripcion": "en trámite"
+   },
+   {
+    "codigo": "93",
+    "descripcion": "Acta Nacimiento"
+   },
+   {
+    "codigo": "94",
+    "descripcion": "Pasaporte"
+   },
+   {
+    "codigo": "95",
+    "descripcion": "CI Bs. As. RNP"
+   },
+   {
+    "codigo": "96",
+    "descripcion": "DNI"
+   },
+   {
+    "codigo": "99",
+    "descripcion": "Doc. (Otro)"
+   }
+  ],
+  "alicuotas_iva": [
+   {
+    "codigo": "3",
+    "descripcion": "0%"
+   },
+   {
+    "codigo": "4",
+    "descripcion": "10.5%"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "21%"
+   },
+   {
+    "codigo": "6",
+    "descripcion": "27%"
+   },
+   {
+    "codigo": "8",
+    "descripcion": "5%"
+   },
+   {
+    "codigo": "9",
+    "descripcion": "2.5%"
+   }
+  ],
+  "tipos_tributo": [
+   {
+    "codigo": "1",
+    "descripcion": "Impuestos nacionales"
+   },
+   {
+    "codigo": "2",
+    "descripcion": "Impuestos provinciales"
+   },
+   {
+    "codigo": "3",
+    "descripcion": "Impuestos municipales"
+   },
+   {
+    "codigo": "4",
+    "descripcion": "Impuestos Internos"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "IIBB"
+   },
+   {
+    "codigo": "6",
+    "descripcion": "Percepción de IVA"
+   },
+   {
+    "codigo": "7",
+    "descripcion": "Percepción de IIBB"
+   },
+   {
+    "codigo": "8",
+    "descripcion": "Percepciones por Impuestos Municipales"
+   },
+   {
+    "codigo": "9",
+    "descripcion": "Otras Percepciones"
+   },
+   {
+    "codigo": "13",
+    "descripcion": "Percepción de IVA a no Categorizado"
+   },
+   {
+    "codigo": "99",
+    "descripcion": "Otro"
+   }
+  ],
+  "conceptos": [
+   {
+    "codigo": "1",
+    "descripcion": "Producto"
+   },
+   {
+    "codigo": "2",
+    "descripcion": "Servicios"
+   },
+   {
+    "codigo": "3",
+    "descripcion": "Productos y Servicios"
+   }
+  ],
+  "condiciones_iva_receptor": [
+   {
+    "codigo": "1",
+    "descripcion": "IVA Responsable Inscripto",
+    "clases_comprobante": "A/ALEY/C"
+   },
+   {
+    "codigo": "4",
+    "descripcion": "IVA Sujeto Exento",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "Consumidor Final",
+    "clases_comprobante": "C/49"
+   },
+   {
+    "codigo": "6",
+    "descripcion": "Responsable Monotributo",
+    "clases_comprobante": "A/ALEY/C"
+   },
+   {
+    "codigo": "7",
+    "descripcion": "Sujeto No Categorizado",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "8",
+    "descripcion": "Proveedor del Exterior",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "9",
+    "descripcion": "Cliente del Exterior",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "10",
+    "descripcion": "IVA Liberado – Ley N° 19.640",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "13",
+    "descripcion": "Monotributista Social",
+    "clases_comprobante": "A/ALEY/C"
+   },
+   {
+    "codigo": "15",
+    "descripcion": "IVA No Alcanzado",
+    "clases_comprobante": "B/C"
+   },
+   {
+    "codigo": "16",
+    "descripcion": "Monotributo Trabajador Independiente Promovido",
+    "clases_comprobante": "A/ALEY/C"
+   }
+  ],
+  "opcionales": [
+   {
+    "codigo": "2",
+    "descripcion": "RG Empresas Promovidas - Indentificador de proyecto vinculado a Régimen de Promoción Industrial"
+   },
+   {
+    "codigo": "5",
+    "descripcion": "Excepcion computo IVA Credito Fiscal"
+   },
+   {
+    "codigo": "7",
+    "descripcion": "RG 3668 Impuesto al Valor Agregado - Art.12 IVA Carácter del Firmante"
+   },
+   {
+    "codigo": "10",
+    "descripcion": "RG 3.368 Establecimientos de educación pública de gestión privada - Actividad Comprendida"
+   },
+   {
+    "codigo": "11",
+    "descripcion": "RG 2.820 Operaciones económicas vinculadas con bienes inmuebles - Actividad Comprendida"
+   },
+   {
+    "codigo": "12",
+    "descripcion": "RG 3.687 Locación temporaria de inmuebles con fines turísticos - Actividad Comprendida"
+   },
+   {
+    "codigo": "13",
+    "descripcion": "RG 2.863 Representantes de Modelos"
+   },
+   {
+    "codigo": "14",
+    "descripcion": "RG 2.863 Agencias de publicidad"
+   },
+   {
+    "codigo": "15",
+    "descripcion": "RG 2.863 Personas físicas que desarrollen actividad de modelaje"
+   },
+   {
+    "codigo": "17",
+    "descripcion": "RG 4004-E Locación de inmuebles destino 'casa-habitación'. Dato 2 (dos) = facturación directa / Dato 1 (uno) = facturación a través de intermediario"
+   },
+   {
+    "codigo": "22",
+    "descripcion": "Factura de Crédito Electrónica MiPyMEs (FCE) - Anulación"
+   },
+   {
+    "codigo": "23",
+    "descripcion": "Factura de Crédito Electrónica MiPyMEs (FCE) - Referencia Comercial"
+   },
+   {
+    "codigo": "27",
+    "descripcion": "Factura de Credito Electronica MiPyMEs (FCE) - Transferencia"
+   },
+   {
+    "codigo": "61",
+    "descripcion": "RG 3668 Impuesto al Valor Agregado - Art.12 IVA Firmante Doc Tipo"
+   },
+   {
+    "codigo": "62",
+    "descripcion": "RG 3668 Impuesto al Valor Agregado - Art.12 IVA Firmante Doc Nro"
+   },
+   {
+    "codigo": "91",
+    "descripcion": "RG Bienes Usados 3411 - Nombre y Apellido o Denominación del vendedor del bien usado."
+   },
+   {
+    "codigo": "92",
+    "descripcion": "RG Bienes Usados 3411 - Nacionalidad del vendedor del bien usado."
+   },
+   {
+    "codigo": "93",
+    "descripcion": "RG Bienes Usados 3411 - Domicilio del vendedor del bien usado."
+   },
+   {
+    "codigo": "1011",
+    "descripcion": "RG 3.368 Establecimientos de educación pública de gestión privada - Tipo de Documento"
+   },
+   {
+    "codigo": "1012",
+    "descripcion": "RG 3.368 Establecimientos de educación pública de gestión privada - Número de Documento"
+   },
+   {
+    "codigo": "1801",
+    "descripcion": "RG 4004-E Locación de inmuebles destino 'casa-habitación'. Clave Única de Identificación Tributaria (CUIT)."
+   },
+   {
+    "codigo": "1802",
+    "descripcion": "RG 4004-E Locación de inmuebles destino 'casa-habitación'. Apellido y nombres, denominación y/o razón social."
+   },
+   {
+    "codigo": "2101",
+    "descripcion": "Factura de Crédito Electrónica MiPyMEs (FCE) - CBU del Emisor"
+   },
+   {
+    "codigo": "2102",
+    "descripcion": "Factura de Crédito Electrónica MiPyMEs (FCE) - Alias del Emisor"
+   }
+  ],
+  "monedas": [
+   {
+    "codigo": "002",
+    "descripcion": "Dólar Libre EEUU"
+   },
+   {
+    "codigo": "009",
+    "descripcion": "Franco Suizo"
+   },
+   {
+    "codigo": "010",
+    "descripcion": "Pesos Mejicanos"
+   },
+   {
+    "codigo": "011",
+    "descripcion": "Pesos Uruguayos"
+   },
+   {
+    "codigo": "012",
+    "descripcion": "Real"
+   },
+   {
+    "codigo": "014",
+    "descripcion": "Coronas Danesas"
+   },
+   {
+    "codigo": "015",
+    "descripcion": "Coronas Noruegas"
+   },
+   {
+    "codigo": "016",
+    "descripcion": "Coronas Suecas"
+   },
+   {
+    "codigo": "018",
+    "descripcion": "Dólar Canadiense"
+   },
+   {
+    "codigo": "019",
+    "descripcion": "Yens"
+   },
+   {
+    "codigo": "021",
+    "descripcion": "Libra Esterlina"
+   },
+   {
+    "codigo": "023",
+    "descripcion": "Bolívar Venezolano"
+   },
+   {
+    "codigo": "024",
+    "descripcion": "Corona Checa"
+   },
+   {
+    "codigo": "025",
+    "descripcion": "Dinar Serbio"
+   },
+   {
+    "codigo": "026",
+    "descripcion": "Dólar Australiano"
+   },
+   {
+    "codigo": "028",
+    "descripcion": "Florín (Antillas Holandesas)"
+   },
+   {
+    "codigo": "029",
+    "descripcion": "Güaraní"
+   },
+   {
+    "codigo": "030",
+    "descripcion": "Shekel (Israel)"
+   },
+   {
+    "codigo": "031",
+    "descripcion": "Peso Boliviano"
+   },
+   {
+    "codigo": "032",
+    "descripcion": "Peso Colombiano"
+   },
+   {
+    "codigo": "033",
+    "descripcion": "Peso Chileno"
+   },
+   {
+    "codigo": "034",
+    "descripcion": "Rand Sudafricano"
+   },
+   {
+    "codigo": "035",
+    "descripcion": "Nuevo Sol Peruano"
+   },
+   {
+    "codigo": "040",
+    "descripcion": "Leu Rumano"
+   },
+   {
+    "codigo": "041",
+    "descripcion": "Derechos Especiales de Giro"
+   },
+   {
+    "codigo": "042",
+    "descripcion": "Peso Dominicano"
+   },
+   {
+    "codigo": "043",
+    "descripcion": "Balboas Panameñas"
+   },
+   {
+    "codigo": "044",
+    "descripcion": "Córdoba Nicaragüense"
+   },
+   {
+    "codigo": "045",
+    "descripcion": "Dirham Marroquí"
+   },
+   {
+    "codigo": "046",
+    "descripcion": "Libra Egipcia"
+   },
+   {
+    "codigo": "047",
+    "descripcion": "Riyal Saudita"
+   },
+   {
+    "codigo": "049",
+    "descripcion": "Gramos de Oro Fino"
+   },
+   {
+    "codigo": "051",
+    "descripcion": "Dólar de Hong Kong"
+   },
+   {
+    "codigo": "052",
+    "descripcion": "Dólar de Singapur"
+   },
+   {
+    "codigo": "053",
+    "descripcion": "Dólar de Jamaica"
+   },
+   {
+    "codigo": "054",
+    "descripcion": "Dólar de Taiwan"
+   },
+   {
+    "codigo": "055",
+    "descripcion": "Quetzal Guatemalteco"
+   },
+   {
+    "codigo": "056",
+    "descripcion": "Forint (Hungría)"
+   },
+   {
+    "codigo": "057",
+    "descripcion": "Baht (Tailandia)"
+   },
+   {
+    "codigo": "059",
+    "descripcion": "Dinar Kuwaiti"
+   },
+   {
+    "codigo": "060",
+    "descripcion": "Euro"
+   },
+   {
+    "codigo": "061",
+    "descripcion": "Zloty Polaco"
+   },
+   {
+    "codigo": "062",
+    "descripcion": "Rupia Hindú"
+   },
+   {
+    "codigo": "063",
+    "descripcion": "Lempira Hondureña"
+   },
+   {
+    "codigo": "064",
+    "descripcion": "Yuan (Rep. Pop. China)"
+   },
+   {
+    "codigo": "DOL",
+    "descripcion": "Dólar Estadounidense"
+   },
+   {
+    "codigo": "NZD",
+    "descripcion": "Dólar Neozelandes"
+   },
+   {
+    "codigo": "PES",
+    "descripcion": "Pesos Argentinos"
+   },
+   {
+    "codigo": "RUB",
+    "descripcion": "Rublo (Rusia)"
+   }
+  ]
+ }
+}

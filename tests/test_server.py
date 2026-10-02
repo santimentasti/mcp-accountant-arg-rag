@@ -18,7 +18,7 @@ EXPECTED_TOOLS = {
     "employee_upsert", "employee_list", "payroll_contributions", "sac_calculation",
     "ganancias_anticipos", "iibb_convenio_multilateral", "sicore_retencion_ganancias", "rates_get",
     "knowledge_search", "knowledge_add_document", "knowledge_list_documents", "knowledge_remove_document",
-    "knowledge_status",
+    "knowledge_status", "arca_codes", "audit_log", "whoami",
 }
 
 

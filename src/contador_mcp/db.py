@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
+import threading
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -116,6 +119,16 @@ CREATE TABLE IF NOT EXISTS kb_chunks (
     text TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    subject TEXT NOT NULL,
+    tool TEXT NOT NULL,
+    args TEXT NOT NULL,
+    outcome TEXT NOT NULL,
+    duration_ms INTEGER
+);
+
 CREATE TABLE IF NOT EXISTS kb_embeddings (
     chunk_id INTEGER NOT NULL REFERENCES kb_chunks(id) ON DELETE CASCADE,
     model TEXT NOT NULL,
@@ -124,6 +137,10 @@ CREATE TABLE IF NOT EXISTS kb_embeddings (
 );
 """
 
+CLIENT_COLUMNS = frozenset({
+    "cuit", "razon_social", "tipo_persona", "condicion_iva", "iibb_regimen", "iibb_jurisdicciones", "empleador",
+    "agente_retencion_sicore", "agente_recaudacion_iibb", "cierre_ejercicio_mes", "actividad", "contacto",
+})
 CLIENT_JSON_FIELDS = ("iibb_jurisdicciones",)
 CLIENT_BOOL_FIELDS = ("empleador", "agente_retencion_sicore", "agente_recaudacion_iibb")
 
@@ -131,24 +148,47 @@ CLIENT_BOOL_FIELDS = ("empleador", "agente_retencion_sicore", "agente_recaudacio
 class Database:
     def __init__(self, path: str | Path):
         self.path = str(path)
+        # Tools run in worker threads: one connection guarded by a re-entrant lock.
+        self.lock = threading.RLock()
+        new = not Path(self.path).exists()
         self.conn = sqlite3.connect(self.path, check_same_thread=False)
+        if new:
+            try:
+                os.chmod(self.path, 0o600)  # sensitive taxpayer data: owner-only
+            except OSError:  # pragma: no cover
+                pass
         self.conn.row_factory = sqlite3.Row
         self.conn.execute("PRAGMA foreign_keys = ON")
+        self.conn.execute("PRAGMA secure_delete = ON")  # deleted rows are zeroed on disk
         self.conn.executescript(SCHEMA)
         self.conn.commit()
 
-    # -- generic helpers -------------------------------------------------
+    # -- generic helpers (all parameterized: never interpolate user input into SQL) ----
     def query(self, sql: str, params: Iterable[Any] = ()) -> list[dict[str, Any]]:
-        return [dict(r) for r in self.conn.execute(sql, tuple(params)).fetchall()]
+        with self.lock:
+            return [dict(r) for r in self.conn.execute(sql, tuple(params)).fetchall()]
 
     def one(self, sql: str, params: Iterable[Any] = ()) -> dict[str, Any] | None:
-        row = self.conn.execute(sql, tuple(params)).fetchone()
-        return dict(row) if row else None
+        with self.lock:
+            row = self.conn.execute(sql, tuple(params)).fetchone()
+            return dict(row) if row else None
 
     def execute(self, sql: str, params: Iterable[Any] = ()) -> sqlite3.Cursor:
-        cur = self.conn.execute(sql, tuple(params))
-        self.conn.commit()
-        return cur
+        with self.lock:
+            cur = self.conn.execute(sql, tuple(params))
+            self.conn.commit()
+            return cur
+
+    @contextmanager
+    def transaction(self):
+        """Atomic multi-statement write: commit on success, rollback on error."""
+        with self.lock:
+            try:
+                yield self.conn
+                self.conn.commit()
+            except Exception:
+                self.conn.rollback()
+                raise
 
     # -- clients ---------------------------------------------------------
     @staticmethod
@@ -165,10 +205,13 @@ class Database:
             row[f] = json.dumps(row.get(f) or [], ensure_ascii=False)
         for f in CLIENT_BOOL_FIELDS:
             row[f] = int(bool(row.get(f)))
+        unknown = set(row) - CLIENT_COLUMNS
+        if unknown:  # column names are interpolated below: only whitelisted identifiers may reach SQL
+            raise ValueError(f"Campos de cliente desconocidos: {sorted(unknown)}")
         cols = list(row.keys())
         updates = ", ".join(f"{c}=excluded.{c}" for c in cols if c != "cuit")
-        self.execute(
-            f"INSERT INTO clients ({', '.join(cols)}) VALUES ({', '.join('?' for _ in cols)}) "
+        self.execute(  # identifiers whitelisted above, values parameterized
+            f"INSERT INTO clients ({', '.join(cols)}) VALUES ({', '.join('?' for _ in cols)}) "  # nosec B608
             f"ON CONFLICT(cuit) DO UPDATE SET {updates}, updated_at=datetime('now')",
             [row[c] for c in cols],
         )

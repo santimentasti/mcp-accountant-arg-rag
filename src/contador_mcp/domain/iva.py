@@ -2,24 +2,18 @@
 
 from __future__ import annotations
 
+import json
 from typing import Iterable
 
-# Códigos de comprobante ARCA (tabla de tipos de comprobante, WSFE).
-TIPOS = {
-    1: "Factura A", 2: "Nota de Débito A", 3: "Nota de Crédito A",
-    6: "Factura B", 7: "Nota de Débito B", 8: "Nota de Crédito B",
-    11: "Factura C", 12: "Nota de Débito C", 13: "Nota de Crédito C",
-    51: "Factura M", 52: "Nota de Débito M", 53: "Nota de Crédito M",
-    201: "Factura de Crédito Electrónica MiPyME A", 202: "Nota de Débito Electrónica MiPyME A",
-    203: "Nota de Crédito Electrónica MiPyME A",
-    206: "Factura de Crédito Electrónica MiPyME B", 207: "Nota de Débito Electrónica MiPyME B",
-    208: "Nota de Crédito Electrónica MiPyME B",
-    211: "Factura de Crédito Electrónica MiPyME C", 212: "Nota de Débito Electrónica MiPyME C",
-    213: "Nota de Crédito Electrónica MiPyME C",
-}
+from ..config import PACKAGE_DATA_DIR
+
+# Códigos de comprobante ARCA (tabla FEParamGetTiposCbte, ver data/arca_tablas.json).
+_TABLAS = json.loads((PACKAGE_DATA_DIR / "arca_tablas.json").read_text(encoding="utf-8"))["tablas"]
+TIPOS = {int(r["codigo"]): r["descripcion"] for r in _TABLAS["tipos_comprobante"]}
 NOTAS_CREDITO = {3, 8, 13, 53, 203, 208, 213}
-CLASE_A_M = {1, 2, 3, 51, 52, 53, 201, 202, 203}  # discriminan IVA -> crédito fiscal computable
-CLASE_C = {11, 12, 13, 211, 212, 213}
+# Comprobantes clase A / M (discriminan IVA -> crédito fiscal computable).
+CLASE_A_M = {1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 63, 201, 202, 203}
+CLASE_C = {11, 12, 13, 15, 211, 212, 213}
 
 
 def tipo_nombre(code: int) -> str:

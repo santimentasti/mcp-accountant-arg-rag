@@ -13,6 +13,8 @@ from ..db import Database
 from .retrievers import BM25, Embedder, cosine_scores, normalize_vec, rank, rrf
 from .text import chunk_markdown, parse_front_matter
 
+MAX_PDF_PAGES = 500
+MAX_DOCUMENT_CHARS = 2_000_000
 META_FIELDS = ("fuente", "url", "impuesto", "jurisdiccion", "tipo", "vigente_desde", "vigente_hasta", "client_cuit")
 NATIONAL = {None, "", "nacional"}
 
@@ -27,6 +29,8 @@ def read_file_text(path: Path) -> str:
         except ImportError as exc:  # pragma: no cover - depends on optional extra
             raise RuntimeError("Para ingerir PDF instalar: pip install 'contador-mcp[pdf]'") from exc
         reader = PdfReader(str(path))
+        if len(reader.pages) > MAX_PDF_PAGES:
+            raise ValueError(f"PDF demasiado largo ({len(reader.pages)} páginas, máx. {MAX_PDF_PAGES})")
         pages = [(p.extract_text() or "").strip() for p in reader.pages]
         return "\n\n".join(f"## Página {i}\n\n{t}" for i, t in enumerate(pages, 1) if t)
     raise ValueError(f"Formato no soportado: {suffix} (usar .md, .txt o .pdf)")
@@ -47,6 +51,8 @@ class KnowledgeBase:
     def add_document(self, title: str, content: str, origin: str = "user", **meta: Any) -> dict:
         if not content.strip():
             raise ValueError("El documento está vacío")
+        if len(content) > MAX_DOCUMENT_CHARS:
+            raise ValueError(f"Documento demasiado grande (máx. {MAX_DOCUMENT_CHARS:,} caracteres)")
         fm, body = parse_front_matter(content)
         title = fm.pop("title", None) or title
         for k, v in fm.items():
@@ -60,18 +66,18 @@ class KnowledgeBase:
             existing = self.db.one("SELECT id FROM kb_documents WHERE content_hash = ?", [content_hash])
             if existing:
                 return {"document_id": existing["id"], "duplicado": True, "chunks": self._count_chunks(existing["id"])}
-            cols = ["title", "content_hash", "origin", *meta.keys()]
+            cols = ["title", "content_hash", "origin", *meta.keys()]  # keys come from META_FIELDS whitelist
             vals = [title, content_hash, origin, *meta.values()]
-            cur = self.db.execute(
-                f"INSERT INTO kb_documents ({', '.join(cols)}) VALUES ({', '.join('?' for _ in cols)})", vals
-            )
-            doc_id = cur.lastrowid
             chunks = chunk_markdown(body)
-            self.db.conn.executemany(
-                "INSERT INTO kb_chunks (document_id, ord, heading, text) VALUES (?, ?, ?, ?)",
-                [(doc_id, i, c.heading, c.text) for i, c in enumerate(chunks)],
-            )
-            self.db.conn.commit()
+            with self.db.transaction() as conn:
+                cur = conn.execute(  # identifiers from META_FIELDS whitelist, values parameterized
+                    f"INSERT INTO kb_documents ({', '.join(cols)}) VALUES ({', '.join('?' for _ in cols)})", vals  # nosec B608
+                )
+                doc_id = cur.lastrowid
+                conn.executemany(
+                    "INSERT INTO kb_chunks (document_id, ord, heading, text) VALUES (?, ?, ?, ?)",
+                    [(doc_id, i, c.heading, c.text) for i, c in enumerate(chunks)],
+                )
             self._dirty = True
         return {"document_id": doc_id, "duplicado": False, "chunks": len(chunks), "titulo": title}
 
@@ -123,7 +129,8 @@ class KnowledgeBase:
         self._dirty = False
 
     def _load_vectors(self, rows: list[dict], texts: list[str]) -> list[list[float]]:
-        assert self.embedder is not None
+        if self.embedder is None:
+            raise RuntimeError("Dense retrieval not configured")
         model = self.embedder.name
         stored = {
             r["chunk_id"]: json.loads(r["vector"])
@@ -132,11 +139,11 @@ class KnowledgeBase:
         missing = [i for i, r in enumerate(rows) if r["chunk_id"] not in stored]
         if missing:
             new = self.embedder.embed([texts[i] for i in missing])
-            self.db.conn.executemany(
-                "INSERT OR REPLACE INTO kb_embeddings (chunk_id, model, vector) VALUES (?, ?, ?)",
-                [(rows[i]["chunk_id"], model, json.dumps(normalize_vec(v))) for i, v in zip(missing, new)],
-            )
-            self.db.conn.commit()
+            with self.db.transaction() as conn:
+                conn.executemany(
+                    "INSERT OR REPLACE INTO kb_embeddings (chunk_id, model, vector) VALUES (?, ?, ?)",
+                    [(rows[i]["chunk_id"], model, json.dumps(normalize_vec(v))) for i, v in zip(missing, new)],
+                )
             for i, v in zip(missing, new):
                 stored[rows[i]["chunk_id"]] = normalize_vec(v)
         return [stored[r["chunk_id"]] for r in rows]
